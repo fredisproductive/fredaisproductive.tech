@@ -1,0 +1,363 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   UNIVERSAL STYLES - ALL STYLES FOR ENTIRE REPO
+   ============================================ */
+
+/* Base Styles */
+body {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: transparent;
+}
+
+/* Dot Pattern Background */
+.dot-pattern {
+  --dot-bg: #fbfbfb;
+  --dot-color: #cacaca;
+  --dot-size: 1px;
+  --dot-space: 20px;
+  background-color: var(--dot-bg) !important;
+  background-image: 
+    radial-gradient(circle, var(--dot-color) 1px, transparent 1px) !important;
+  background-size: var(--dot-space) var(--dot-space) !important;
+  background-position: 0 0 !important;
+  background-repeat: repeat !important;
+  min-height: 100vh;
+  position: relative;
+  z-index: 0;
+}
+
+/* Root Container */
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Custom Font Families */
+.font-manrope {
+  font-family: 'Manrope', sans-serif;
+}
+
+.font-source-serif {
+  font-family: 'Source Serif 4', serif;
+}
+
+.font-pt-serif {
+  font-family: 'PT Serif', serif;
+}
+
+.font-sofadi {
+  font-family: 'Sofadi One', cursive;
+}
+
+/* Navigation Links */
+nav button,
+.nav-link {
+  transition: color 0.2s ease;
+}
+
+nav button:hover,
+.nav-link:hover {
+  color: #000;
+}
+
+/* Vertical Progress Navigation */
+.progress-nav-line {
+  position: fixed;
+  left: 470px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: 20;
+  cursor: pointer;
+}
+
+.progress-nav-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 100%;
+  background-color: #191717;
+  opacity: 0.2;
+}
+
+.progress-indicator {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  background-color: #191717;
+  transition: height 0.3s ease;
+}
+
+.section-indicator {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.section-indicator.active {
+  transform: translateX(-50%) translateY(-50%) scale(1.25);
+  opacity: 1;
+  font-weight: 600;
+}
+
+.section-indicator.inactive {
+  transform: translateX(-50%) translateY(-50%) scale(1);
+  opacity: 0.6;
+  font-weight: 200;
+}
+
+.nav-label {
+  position: absolute;
+  left: 20px;
+  transform: translateY(-50%);
+  text-align: right;
+  font-size: 11px;
+  font-weight: 800;
+  color: #191717;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.nav-label.visible {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.nav-label.hidden {
+  opacity: 0;
+  transform: translateY(-50%) translateX(-16px);
+  pointer-events: none;
+}
+
+/* Social Media Icons */
+.social-link {
+  transition: opacity 0.2s ease;
+}
+
+.social-link:hover {
+  opacity: 0.7;
+}
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+  transition: background-color 0.2s ease;
+}
+
+.dark-mode-toggle:hover .toggle-bg {
+  background-color: #c0c0c0;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+  overflow: hidden;
+}
+
+/* Hide scrollbar for content wrapper */
+.content-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.content-wrapper {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overscroll-behavior: contain;
+}
+
+/* Section Spacing */
+section {
+  scroll-margin-top: 100px;
+}
+
+/* Image Optimization */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Social Media Icons */
+a img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Link Styles */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Focus States for Accessibility */
+button:focus,
+a:focus {
+  outline: 2px solid #191717;
+  outline-offset: 2px;
+}
+
+/* Background Pattern Overlay */
+.bg-pattern {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Dot Pattern Mask */
+.dot-pattern-mask {
+  mask-image: radial-gradient(300px circle at center, white, transparent);
+  -webkit-mask-image: radial-gradient(300px circle at center, white, transparent);
+}
+
+/* ASCII Art Container */
+.ascii-art {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: pre;
+  color: #000;
+}
+
+/* Decorative Symbol */
+.decorative-symbol {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 200;
+  font-size: 12px;
+  color: #191717;
+  text-align: right;
+}
+
+/* Section Headings */
+.section-heading {
+  font-family: 'Source Serif 4', serif;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 32px;
+  color: #191717;
+}
+
+/* Main Heading */
+.main-heading {
+  font-family: 'Sofadi One', cursive;
+  font-style: italic;
+  font-size: 40px;
+  color: #191717;
+}
+
+.main-heading .greeting {
+  font-family: 'Source Serif 4', serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.main-heading .name {
+  font-family: 'Source Serif 4', serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* Body Text */
+.body-text {
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  color: #191717;
+  line-height: 1.6;
+}
+
+/* Work/Experience Items */
+.experience-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 252px;
+  align-items: flex-start;
+}
+
+.experience-title {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #191717;
+}
+
+.experience-date {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 200;
+  font-size: 12px;
+  color: #191717;
+  text-align: right;
+}
+
+.experience-description {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  color: #191717;
+  margin-top: 5px;
+  width: 100%;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+}
+
+.footer-copyright {
+  font-family: 'PT Serif', serif;
+  font-weight: 300;
+  font-style: italic;
+  font-size: 16px;
+  color: #191717;
+}
+
+.footer-attribution {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  color: #191717;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1440px) {
+  .main-container {
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-heading {
+    font-size: 32px;
+  }
+  
+  .section-heading {
+    font-size: 24px;
+  }
+  
+  .experience-item {
+    gap: 20px;
+  }
+  
+  nav {
+    position: relative;
+    left: auto;
+    top: auto;
+  }
+}
+
