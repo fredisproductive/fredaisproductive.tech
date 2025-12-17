@@ -15,6 +15,37 @@ body {
   background-color: transparent;
 }
 
+/* Remove focus outlines and text selection */
+button,
+a {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+button:focus,
+button:active,
+button:focus-visible,
+a:focus,
+a:active,
+a:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+*:focus {
+  outline: none !important;
+}
+
+*:focus-visible {
+  outline: none !important;
+}
+
 /* Dot Pattern Background */
 .dot-pattern {
   --dot-bg: #fbfbfb;
@@ -30,6 +61,19 @@ body {
   min-height: 100vh;
   position: relative;
   z-index: 0;
+  transition: background-color 0.3s ease, background-image 0.3s ease;
+}
+
+/* Dark Mode Styles */
+.dark .dot-pattern {
+  --dot-bg: #191717;
+  background-color: #191717 !important;
+  background-image: none !important;
+}
+
+.dark {
+  background-color: #191717;
+  color: #E7E7E7;
 }
 
 /* Root Container */
