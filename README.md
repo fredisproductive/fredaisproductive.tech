@@ -43,16 +43,6 @@ The built files will be in the `dist` directory.
 npm run preview
 ```
 
-## Deployment
-
-### Deploy to Vercel
-
-1. Push your code to GitHub
-2. Import the repository in [Vercel](https://vercel.com)
-3. Vercel will automatically detect Vite and configure the build
-4. Add your custom domain (`fredaisproductive.tech`) in Vercel project settings
-5. Update DNS records at your domain registrar to point to Vercel
-
 ### Deploy to GitHub Pages
 
 1. Install `gh-pages` package: `npm install --save-dev gh-pages`
@@ -67,13 +57,6 @@ npm run preview
 4. Configure custom domain in GitHub Pages settings
 5. Update DNS records at your domain registrar
 
-## Features
-
-- Clean, minimalist design
-- Smooth scroll navigation
-- Dark mode toggle (UI ready, functionality can be extended)
-- Responsive layout
-- Social media links (LinkedIn, GitHub)
 
 ## Project Structure
 
