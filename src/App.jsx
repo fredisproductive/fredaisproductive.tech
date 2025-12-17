@@ -400,11 +400,15 @@ function App() {
                 <span> work.</span>
               </p>
               <p className="mb-[10px]">
+                <span>I study </span>
+                <span className="font-bold">Software Engineering</span>
+                <span> and Business at the University of Western Ontario.</span>
+                </p>
+              <p className="mb-[10px]">
                 <span>I'm passionate about the expressive and human aspect of the tech field. </span>
                 <span className="font-bold">I get inspired very easily!</span>
                 <span> That broadly includes the intersection of design, AI, and computer systems. In my free-time, I indulge in organizing chaotic nerd meetups (hackathons), cooking+baking, listening to music, and finding my next learning fixation. </span>
               </p>
-              <p className="mb-[10px]">I study Software Engineering and Business at the University of Western Ontario.</p>
               <p className="mb-[-5px]">Currently: reworking my GitHub, brainstorming projects, and recovering from exams :)</p>
             </div>
 
