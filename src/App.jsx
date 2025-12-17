@@ -263,13 +263,45 @@ function App() {
       {/* Top border */}
       <div className={`fixed h-[1px] left-0 top-0 w-full z-30 ${darkMode ? 'bg-[#E7E7E7]' : 'bg-[#191717]'}`} />
 
+      {/* Mobile Navigation Menu - Only visible on mobile */}
+      <div className="md:hidden fixed top-4 right-4 z-30">
+        <div className="relative">
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            className={`w-10 h-10 rounded-full flex items-center justify-center ${darkMode ? 'bg-[#E7E7E7] text-[#191717]' : 'bg-[#191717] text-[#E7E7E7]'}`}
+          >
+            <span className="text-lg">{showMenu ? '✕' : '☰'}</span>
+          </button>
+          {showMenu && (
+            <div className={`absolute top-12 right-0 rounded-lg shadow-lg p-4 min-w-[150px] ${darkMode ? 'bg-[#191717]' : 'bg-white'}`}>
+              {sections.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => {
+                    scrollToSection(section.id)
+                    setShowMenu(false)
+                  }}
+                  className={`block w-full text-left py-2 text-sm font-bold underline decoration-solid underline-offset-2 ${
+                    activeSection === section.id
+                      ? darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'
+                      : darkMode ? 'text-[#E7E7E7] opacity-70' : 'text-[#191717] opacity-70'
+                  }`}
+                >
+                  {section.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Main container */}
       <div className="relative max-w-[1440px] mx-auto" style={{ minHeight: '100vh', paddingBottom: '100px', backgroundColor: 'transparent' }}>
 
         {/* Left Navigation - Vertical Progress Line */}
         <div 
           ref={navRef}
-          className="fixed z-20 w-[2px] cursor-pointer"
+          className="hidden md:block fixed z-20 w-[2px] cursor-pointer"
           style={{ 
             left: 'calc(50% - 292px)', // Position to left of centered content
             top: `${lineStart}px`,
@@ -343,7 +375,7 @@ function App() {
          {/* Content wrapper */}
          <div 
            ref={contentRef}
-           className="content-wrapper relative pb-[100px] mx-auto max-w-[534px]" 
+           className="content-wrapper relative pb-[100px] mx-auto max-w-[534px] px-4 md:px-0" 
            style={{ 
              marginTop: `${lineStart}px`, // Position top of wrapper at progress line start (73px)
              paddingTop: '76px', // Space for ASCII star (76px above about section)
@@ -364,14 +396,14 @@ function App() {
                 <div className="flex-none rotate-[270deg]">
                   <div className="bg-[#d9d9d9] group-hover:bg-[#c0c0c0] h-[101px] rounded-[53px] w-[24px] transition-colors" />
                 </div>
-                <span className={`absolute font-['PT_Serif'] text-[14px] left-[12px] top-[1px] ${darkMode ? 'text-black' : 'text-black'}`}>
+                <span className={`absolute font-['PT_Serif'] text-[12px] md:text-[14px] left-[12px] top-[1px] ${darkMode ? 'text-black' : 'text-black'}`}>
                   {darkMode ? 'light mode ☼' : 'dark mode ⏾'}
                 </span>
               </button>
             </div>
 
             {/* ASCII Art - positioned relative to about section */}
-            <div className={`absolute top-[-76px] right-[55px] font-['Manrope'] font-extrabold text-[11px] leading-tight whitespace-pre z-10 ${darkMode ? 'text-[#E7E7E7]' : 'text-black'}`}>
+            <div className={`absolute top-[-76px] right-[55px] font-['Manrope'] font-extrabold text-[8px] md:text-[11px] leading-tight whitespace-pre z-10 hidden sm:block ${darkMode ? 'text-[#E7E7E7]' : 'text-black'}`}>
               <p className="mb-0">{`⠀⠀⢸⡿⢦⣄⠀⢀⣠⣴⣶⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ `}</p>
               <p className="mb-0">{`⠀⠀⠘⣷⠀⠉⠛⠛⠉⢰⡇⠀⠀⠘⣷⣦⣾⡇⠀⠀⠀⠀⠀⠀⠀ `}</p>
               <p className="mb-0">{`⠀⢀⣰⠿⠀⠀⠀⠀⠀⢿⡁⠀⢀⣴⣿⣿⣿⣶⡄⠀⠀⠀⠀⠀⠀ `}</p>
@@ -386,12 +418,12 @@ function App() {
               <p>{`⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⠀⠉⠀⠀⠀⠀⠀`}</p>
             </div>
 
-            <h1 className={`font-['Sofadi_One'] italic text-[40px] mb-[5px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+            <h1 className={`font-['Sofadi_One'] italic text-[32px] md:text-[40px] mb-[5px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
               <span className="font-['Source_Serif_4'] font-normal not-italic">hello, i'm </span>
               <span className="font-['Source_Serif_4'] font-bold italic">freda!</span>
             </h1>
             
-            <div className={`text-[13px] leading-relaxed mb-[20px] font-['Manrope'] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+            <div className={`text-[12px] md:text-[13px] leading-relaxed mb-[20px] font-['Manrope'] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
               <p className="mb-[10px]">
                 <span>I do </span>
                 <span className="font-bold">creative</span>
@@ -443,66 +475,66 @@ function App() {
 
           {/* Work Section */}
           <section id="work" className="relative mb-[35px] max-w-[534px]">
-            <h2 className={`font-['Source_Serif_4'] font-bold italic text-[32px] mb-[5px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+            <h2 className={`font-['Source_Serif_4'] font-bold italic text-[28px] md:text-[32px] mb-[5px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
               work
             </h2>
             
             <div className="space-y-[10px]">
               <div className="flex flex-col gap-[5px]">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-['Manrope'] font-bold text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Scotiabank, GWE</h3>
-                  <p className={`font-['Manrope'] font-extralight text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>May 2025 - Aug 2025</p>
+                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Scotiabank, GWE</h3>
+                  <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>May 2025 - Aug 2025</p>
                 </div>
-                <p className={`font-['Manrope'] font-normal text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Developed full-stack financial monitoring systems and data pipelines to enhance operational integrity and accelerate issue resolution.</p>
+                <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Developed full-stack financial monitoring systems and data pipelines to enhance operational integrity and accelerate issue resolution.</p>
               </div>
               
               <div className="flex flex-col gap-[5px]">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-['Manrope'] font-bold text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>MANTECH Inc.</h3>
-                  <p className={`font-['Manrope'] font-extralight text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>May 2024 - Aug 2024</p>
+                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>MANTECH Inc.</h3>
+                  <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>May 2024 - Aug 2024</p>
                 </div>
-                <p className={`font-['Manrope'] font-normal text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Engineered scalable automation software and secure, internationalized platforms to drive product expansion and system reliability.</p>
+                <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Engineered scalable automation software and secure, internationalized platforms to drive product expansion and system reliability.</p>
               </div>
               
               <div className="flex flex-col gap-[5px]">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-['Manrope'] font-bold text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>UW Social and Intelligent Robotics Research Lab (SIRRL)</h3>
-                  <p className={`font-['Manrope'] font-extralight text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>June 2022 - Aug 2022</p>
+                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>UW Social and Intelligent Robotics Research Lab (SIRRL)</h3>
+                  <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>June 2022 - Aug 2022</p>
                 </div>
-                <p className={`font-['Manrope'] font-normal text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Built human-robot interaction software for social robotics platforms, focusing on algorithmic optimization and intelligent systems research.</p>
+                <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Built human-robot interaction software for social robotics platforms, focusing on algorithmic optimization and intelligent systems research.</p>
               </div>
             </div>
           </section>
 
           {/* Extracurriculars Section */}
           <section id="extracurriculars" className="relative mb-[30px] max-w-[534px]">
-            <h2 className={`font-['Source_Serif_4'] font-bold italic text-[32px] mb-[0px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+            <h2 className={`font-['Source_Serif_4'] font-bold italic text-[28px] md:text-[32px] mb-[0px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
               extracurriculars
             </h2>
-            <p className={`font-['Source_Serif_4'] font-normal italic text-[13px] mb-[12px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+            <p className={`font-['Source_Serif_4'] font-normal italic text-[12px] md:text-[13px] mb-[12px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
               also known as what i pour my heart, soul, blood, sweat, and tears into in my spare time.
             </p>
             
             <div className="space-y-[10px]">
               <div className="flex flex-col gap-[5px]">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-['Manrope'] font-bold text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>SheHacks+ 10 Co-Chair</h3>
-                  <p className={`font-['Manrope'] font-extralight text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Jan 2025 - Mar 2026</p>
+                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>SheHacks+ 10 Co-Chair</h3>
+                  <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Jan 2025 - Mar 2026</p>
                 </div>
-                <p className={`font-['Manrope'] font-normal text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
                   Organizing Canada's largest all-women, non-binary hackathon under the Women+ In Technology Society (WITS+) bubble at Western 🚀
                 </p>
-                <p className={`font-['Manrope'] font-extralight text-[11px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                <p className={`font-['Manrope'] font-extralight text-[10px] md:text-[11px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
                   Past: Sponsorship Director, SheHacks+9 Director
                 </p>
               </div>
               
               <div className="flex flex-col gap-[5px] mt-[30px]">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-['Manrope'] font-bold text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Hack Western 12 Sponsorship Lead</h3>
-                  <p className={`font-['Manrope'] font-extralight text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Mar 2025 - Jan 2026</p>
+                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Hack Western 12 Sponsorship Lead</h3>
+                  <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Mar 2025 - Jan 2026</p>
                 </div>
-                <p className={`font-['Manrope'] font-normal text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
                   Organizing corporate relations for one of Canada's largest student-run hackathons at Western 🐴
                 </p>
               </div>
@@ -511,10 +543,10 @@ function App() {
 
           {/* Projects Section */}
           <section id="projects" className="relative mb-[30px] max-w-[534px]">
-            <h2 className={`font-['Source_Serif_4'] font-bold italic text-[32px] mb-[8px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+            <h2 className={`font-['Source_Serif_4'] font-bold italic text-[28px] md:text-[32px] mb-[8px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
               projects
             </h2>
-            <p className={`font-['Manrope'] font-normal text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+            <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
               coming soon...
             </p>
           </section>
@@ -523,11 +555,11 @@ function App() {
       </div>
 
       {/* Footer */}
-      <footer className="fixed left-0 right-0 text-center py-[10px] z-20" style={{ bottom: '10px' }}>
+      <footer className="fixed left-0 right-0 text-center py-[10px] z-20 px-4" style={{ bottom: '10px' }}>
         {/* <p className={`font-['PT_Serif'] font-light italic text-[11px] mb-[5px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
           <span className="font-bold italic">© 2025 freda zhao </span>
         </p> */}
-        <p className={`font-['Manrope'] font-light text-[11px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+        <p className={`font-['Manrope'] font-light text-[10px] md:text-[11px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
           <span>designed & coded with </span>
           <span className="font-extrabold">♡</span>
           <span> |  last updated: </span>
