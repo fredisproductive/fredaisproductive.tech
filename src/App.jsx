@@ -7,6 +7,8 @@ const imgLine12 = "/assets/line12.png"
 const imgLine13 = "/assets/line13.png"
 const imgLine14 = "/assets/line14.png"
 
+const NAME_VARIANTS = ['freda!', '赵嘉奕!']
+
 function App() {
   const [darkMode, setDarkMode] = useState(false)
   const [activeSection, setActiveSection] = useState('about')
@@ -15,9 +17,13 @@ function App() {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [lineStart, setLineStart] = useState(0)
   const [lineEnd, setLineEnd] = useState(0)
+  const [typedName, setTypedName] = useState('')
+  const [showCursor, setShowCursor] = useState(true)
   const navRef = useRef(null)
   const contentRef = useRef(null)
   const hoverTimeoutRef = useRef(null)
+  const typeIntervalRef = useRef(null)
+  const restartTimeoutRef = useRef(null)
 
   useEffect(() => {
     if (darkMode) {
@@ -26,6 +32,180 @@ function App() {
       document.documentElement.classList.remove('dark')
     }
   }, [darkMode])
+
+  // Natural typing animation for name - randomly types, deletes, pauses
+  useEffect(() => {
+    let currentText = ''
+    let targetText = NAME_VARIANTS[Math.floor(Math.random() * NAME_VARIANTS.length)]
+    let queuedTargetText = null
+    let isSwitchingName = false
+    let hasCorrectedAtFull = false
+    let isDeleting = false
+    let pauseCount = 0
+    let isActive = true
+    let isPausingBeforeDelete = false // Track if we're pausing before deleting a character
+    // Prevent “flashing” by limiting rapid type/delete alternation
+    let modeSwitchesThisCycle = 0
+    let actionsSinceLastSwitch = 0
+    const MAX_MODE_SWITCHES_PER_CYCLE = 2
+    const MIN_ACTIONS_BEFORE_SWITCH = 2
+    
+    const naturalType = () => {
+      if (!isActive) return
+      
+      // Random chance to pause (10% chance)
+      if (pauseCount > 0) {
+        pauseCount--
+        restartTimeoutRef.current = setTimeout(naturalType, 100 + Math.random() * 200)
+        return
+      }
+      
+      // If we've reached the target
+      if (currentText === targetText && !isSwitchingName) {
+        // Occasionally do a small “correction” even after finishing (delete a bit, then retype),
+        // but only once per full-name cycle so it doesn’t loop forever.
+        if (!hasCorrectedAtFull && Math.random() < 0.5) {
+          hasCorrectedAtFull = true
+          isDeleting = true
+          isPausingBeforeDelete = false
+          pauseCount = 0
+          modeSwitchesThisCycle = 0
+          actionsSinceLastSwitch = 0
+          // Let the normal delete logic handle a short correction; don’t start name-switch yet.
+        } else {
+          // Wait, then delete one-by-one before typing the next name
+          restartTimeoutRef.current = setTimeout(() => {
+            queuedTargetText = NAME_VARIANTS[Math.floor(Math.random() * NAME_VARIANTS.length)]
+            isSwitchingName = true
+            isDeleting = true
+            pauseCount = 0
+            isPausingBeforeDelete = false
+            modeSwitchesThisCycle = 0
+            actionsSinceLastSwitch = 0
+            // start erasing after a short beat
+            restartTimeoutRef.current = setTimeout(naturalType, 180)
+          }, 4000)
+          return
+        }
+      }
+
+      // During a name switch, once we've erased everything, start typing the queued name
+      if (isSwitchingName && currentText.length === 0) {
+        isSwitchingName = false
+        isDeleting = false
+        isPausingBeforeDelete = false
+        modeSwitchesThisCycle = 0
+        actionsSinceLastSwitch = 0
+        hasCorrectedAtFull = false
+        targetText = queuedTargetText ?? NAME_VARIANTS[Math.floor(Math.random() * NAME_VARIANTS.length)]
+        queuedTargetText = null
+        restartTimeoutRef.current = setTimeout(naturalType, 180)
+        return
+      }
+      
+      // Prevent multiple mode switches in the same tick (can cause visible “flashing”)
+      let didSwitchModeThisTick = false
+      const canSwitchModeNow = () =>
+        !isSwitchingName &&
+        !didSwitchModeThisTick &&
+        actionsSinceLastSwitch >= MIN_ACTIONS_BEFORE_SWITCH &&
+        modeSwitchesThisCycle < MAX_MODE_SWITCHES_PER_CYCLE
+
+      // Random chance to start deleting (15% chance if we're typing forward and have at least 2 chars)
+      if (
+        canSwitchModeNow() &&
+        !isDeleting &&
+        currentText.length >= 2 &&
+        currentText.length < targetText.length &&
+        Math.random() < 0.15
+      ) {
+        isDeleting = true
+        isPausingBeforeDelete = false // Reset pause state
+        modeSwitchesThisCycle++
+        actionsSinceLastSwitch = 0
+        pauseCount = Math.floor(Math.random() * 3) // Pause 0-2 cycles before deleting
+        didSwitchModeThisTick = true
+      }
+      
+      // Random chance to stop deleting and continue typing (30% chance if deleting)
+      if (
+        canSwitchModeNow() &&
+        isDeleting &&
+        currentText.length > 0 &&
+        Math.random() < 0.3
+      ) {
+        isDeleting = false
+        isPausingBeforeDelete = false // Reset pause state
+        modeSwitchesThisCycle++
+        actionsSinceLastSwitch = 0
+        pauseCount = Math.floor(Math.random() * 2) // Pause 0-1 cycles before continuing
+        didSwitchModeThisTick = true
+      }
+      
+      // Perform action
+      if (isDeleting && currentText.length > 0) {
+        if (!isPausingBeforeDelete) {
+          // First, pause to show the character before deleting it (more natural)
+          isPausingBeforeDelete = true
+          const pauseDelay = 150 + Math.random() * 200 // Pause before deletion
+          restartTimeoutRef.current = setTimeout(naturalType, pauseDelay)
+        } else {
+          // Now actually delete the character
+          currentText = currentText.slice(0, -1)
+          setTypedName(currentText)
+          actionsSinceLastSwitch++
+          isPausingBeforeDelete = false // Reset for next deletion
+          // Pause after deletion before deleting next character
+          const delay = 200 + Math.random() * 250
+          restartTimeoutRef.current = setTimeout(naturalType, delay)
+        }
+      } else if (currentText.length < targetText.length) {
+        // Type a character
+        currentText = targetText.slice(0, currentText.length + 1)
+        setTypedName(currentText)
+        actionsSinceLastSwitch++
+        // Random typing speed (faster when closer to completion)
+        const baseDelay = 100
+        const randomVariation = Math.random() * 100
+        const speedBoost = currentText.length > targetText.length * 0.7 ? 0.7 : 1 // Speed up near end
+        const delay = (baseDelay + randomVariation) * speedBoost
+        restartTimeoutRef.current = setTimeout(naturalType, delay)
+      } else {
+        // Fallback: if we ever end up here, behave like a normal cycle restart (erase then type next)
+        restartTimeoutRef.current = setTimeout(() => {
+          queuedTargetText = NAME_VARIANTS[Math.floor(Math.random() * NAME_VARIANTS.length)]
+          isSwitchingName = true
+          isDeleting = true
+          pauseCount = 0
+          isPausingBeforeDelete = false
+          modeSwitchesThisCycle = 0
+          actionsSinceLastSwitch = 0
+           hasCorrectedAtFull = false
+          restartTimeoutRef.current = setTimeout(naturalType, 180)
+        }, 4000)
+      }
+    }
+    
+    // Start typing
+    naturalType()
+    
+    return () => {
+      // Cleanup on unmount
+      isActive = false
+      if (restartTimeoutRef.current) {
+        clearTimeout(restartTimeoutRef.current)
+      }
+    }
+  }, []) // Run once on mount
+
+  // Blinking cursor effect
+  useEffect(() => {
+    const cursorInterval = setInterval(() => {
+      setShowCursor(prev => !prev)
+    }, 530) // Blink speed
+    
+    return () => clearInterval(cursorInterval)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -296,7 +476,7 @@ function App() {
       </div>
 
       {/* Main container */}
-      <div className="relative max-w-[1440px] mx-auto" style={{ minHeight: '100vh', paddingBottom: '100px', backgroundColor: 'transparent' }}>
+      <div className="relative max-w-[1440px] mx-auto" style={{ minHeight: '120vh', paddingBottom: '100px', backgroundColor: 'transparent' }}>
 
         {/* Left Navigation - Vertical Progress Line */}
         <div 
@@ -394,16 +574,20 @@ function App() {
                 className="flex items-center justify-center h-[24px] w-[101px] cursor-pointer group outline-none focus:outline-none"
               >
                 <div className="flex-none rotate-[270deg]">
-                  <div className="bg-[#d9d9d9] group-hover:bg-[#c0c0c0] h-[101px] rounded-[53px] w-[24px] transition-colors" />
+                  <div className={`h-[101px] rounded-[53px] w-[24px] transition-colors ${
+                    darkMode 
+                      ? 'bg-[#d9d9d9] group-hover:bg-[#c0c0c0]' 
+                      : 'bg-[#191717] group-hover:bg-[#2a2a2a]'
+                  }`} />
                 </div>
-                <span className={`absolute font-['PT_Serif'] text-[12px] md:text-[14px] left-[12px] top-[1px] ${darkMode ? 'text-black' : 'text-black'}`}>
+                <span className={`absolute font-['PT_Serif'] text-[12px] md:text-[14px] left-[12px] top-[1px] ${darkMode ? 'text-black' : 'text-white'}`}>
                   {darkMode ? 'light mode ☼' : 'dark mode ⏾'}
                 </span>
               </button>
             </div>
 
             {/* ASCII Art - positioned relative to about section */}
-            <div className={`absolute top-[-76px] right-[55px] font-['Manrope'] font-extrabold text-[8px] md:text-[11px] leading-tight whitespace-pre z-10 hidden sm:block ${darkMode ? 'text-[#E7E7E7]' : 'text-black'}`}>
+            <div className={`absolute top-[-76px] right-[40px] font-['Manrope'] font-extrabold text-[8px] md:text-[11px] leading-tight whitespace-pre z-10 hidden sm:block ${darkMode ? 'text-[#E7E7E7]' : 'text-black'}`}>
               <p className="mb-0">{`⠀⠀⢸⡿⢦⣄⠀⢀⣠⣴⣶⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ `}</p>
               <p className="mb-0">{`⠀⠀⠘⣷⠀⠉⠛⠛⠉⢰⡇⠀⠀⠘⣷⣦⣾⡇⠀⠀⠀⠀⠀⠀⠀ `}</p>
               <p className="mb-0">{`⠀⢀⣰⠿⠀⠀⠀⠀⠀⢿⡁⠀⢀⣴⣿⣿⣿⣶⡄⠀⠀⠀⠀⠀⠀ `}</p>
@@ -420,7 +604,10 @@ function App() {
 
             <h1 className={`font-['Sofadi_One'] italic text-[32px] md:text-[40px] mb-[5px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
               <span className="font-['Source_Serif_4'] font-normal not-italic">hello, i'm </span>
-              <span className="font-['Source_Serif_4'] font-bold italic">freda!</span>
+              <span className="font-['Source_Serif_4'] font-bold italic">
+                {typedName}
+                <span className={showCursor ? 'opacity-100' : 'opacity-0'}>|</span>
+              </span>
             </h1>
             
             <div className={`text-[12px] md:text-[13px] leading-relaxed mb-[20px] font-['Manrope'] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
@@ -482,7 +669,16 @@ function App() {
             <div className="space-y-[10px]">
               <div className="flex flex-col gap-[5px]">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Scotiabank, GWE</h3>
+                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                    <a 
+                      href="https://globalwealth.scotiabank.com/en/home.html" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:opacity-70 transition-opacity underline decoration-solid underline-offset-2"
+                    >
+                      Scotiabank, GWE
+                    </a>
+                  </h3>
                   <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>May 2025 - Aug 2025</p>
                 </div>
                 <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Developed full-stack financial monitoring systems and data pipelines to enhance operational integrity and accelerate issue resolution.</p>
@@ -490,7 +686,16 @@ function App() {
               
               <div className="flex flex-col gap-[5px]">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>MANTECH Inc.</h3>
+                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                    <a 
+                      href="https://mantech-inc.com/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:opacity-70 transition-opacity underline decoration-solid underline-offset-2"
+                    >
+                      MANTECH Inc.
+                    </a>
+                  </h3>
                   <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>May 2024 - Aug 2024</p>
                 </div>
                 <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Engineered scalable automation software and secure, internationalized platforms to drive product expansion and system reliability.</p>
@@ -498,7 +703,16 @@ function App() {
               
               <div className="flex flex-col gap-[5px]">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>UW Social and Intelligent Robotics Research Lab (SIRRL)</h3>
+                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                    <a 
+                      href="https://uwaterloo.ca/social-intelligent-robotics-research-lab/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:opacity-70 transition-opacity underline decoration-solid underline-offset-2"
+                    >
+                      UW Social and Intelligent Robotics Research Lab (SIRRL)
+                    </a>
+                  </h3>
                   <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>June 2022 - Aug 2022</p>
                 </div>
                 <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Built human-robot interaction software for social robotics platforms, focusing on algorithmic optimization and intelligent systems research.</p>
@@ -518,7 +732,16 @@ function App() {
             <div className="space-y-[10px]">
               <div className="flex flex-col gap-[5px]">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>SheHacks+ 10 Co-Chair</h3>
+                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                    <a 
+                      href="https://www.shehacks.ca/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:opacity-70 transition-opacity underline decoration-solid underline-offset-2"
+                    >
+                      SheHacks+ 10 Co-Chair
+                    </a>
+                  </h3>
                   <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Jan 2025 - Mar 2026</p>
                 </div>
                 <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
@@ -531,7 +754,16 @@ function App() {
               
               <div className="flex flex-col gap-[5px] mt-[30px]">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Hack Western 12 Sponsorship Lead</h3>
+                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                    <a 
+                      href="https://www.hackwestern.com/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:opacity-70 transition-opacity underline decoration-solid underline-offset-2"
+                    >
+                      Hack Western 12 Sponsorship Lead
+                    </a>
+                  </h3>
                   <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Mar 2025 - Jan 2026</p>
                 </div>
                 <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
@@ -563,7 +795,7 @@ function App() {
           <span>designed & coded with </span>
           <span className="font-extrabold">♡</span>
           <span> |  last updated: </span>
-          <span className="font italic">12/18/25</span>
+          <span className="font italic">01/22/26</span>
         </p>
       </footer>
     </div>
