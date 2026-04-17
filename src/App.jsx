@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import LeaveYourMark from './LeaveYourMark.jsx'
 
 const imgLinkedin = "/assets/linkedin.png"
 const imgGithub = "/assets/github.png"
@@ -15,10 +16,17 @@ function App() {
   const [isHovering, setIsHovering] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
-  const [lineStart, setLineStart] = useState(0)
-  const [lineEnd, setLineEnd] = useState(0)
+  const [lineStart, setLineStart] = useState(96)
+  const [lineEnd, setLineEnd] = useState(
+    typeof window !== 'undefined' ? window.innerHeight - 50 : 900,
+  )
   const [typedName, setTypedName] = useState('')
   const [showCursor, setShowCursor] = useState(true)
+  const [view, setView] = useState(
+    typeof window !== 'undefined' && window.location.pathname === '/leave-your-mark'
+      ? 'leave'
+      : 'home',
+  )
   const navRef = useRef(null)
   const contentRef = useRef(null)
   const hoverTimeoutRef = useRef(null)
@@ -32,6 +40,21 @@ function App() {
       document.documentElement.classList.remove('dark')
     }
   }, [darkMode])
+
+  useEffect(() => {
+    const handlePop = () => {
+      const path = window.location.pathname
+      setView(path === '/leave-your-mark' ? 'leave' : 'home')
+    }
+    window.addEventListener('popstate', handlePop)
+    return () => window.removeEventListener('popstate', handlePop)
+  }, [])
+
+  const navigateView = (target) => {
+    const path = target === 'leave' ? '/leave-your-mark' : '/'
+    window.history.pushState({}, '', path)
+    setView(target)
+  }
 
   // Natural typing animation for name - randomly types, deletes, pauses
   useEffect(() => {
@@ -211,8 +234,8 @@ function App() {
     const handleScroll = () => {
       const sections = ['about', 'work', 'extracurriculars', 'projects']
       
-      // Line starts at ASCII art top (73px) and ends 50px before bottom of viewport
-      const startY = 73
+      // Line starts below top breathing room; ends before bottom of viewport
+      const startY = 96
       const endY = window.innerHeight - 50
       
       setLineStart(startY)
@@ -267,8 +290,8 @@ function App() {
           let closestSection = sections[0]
           let minDistance = Infinity
           
-          sections.forEach(section => {
-            const element = document.getElementById(section.id)
+          sections.forEach((sectionId) => {
+            const element = document.getElementById(sectionId)
             if (element) {
               const elementOffsetTop = element.offsetTop
               const elementHeight = element.offsetHeight
@@ -276,12 +299,12 @@ function App() {
               const distance = Math.abs(viewportCenter - elementCenter)
               if (distance < minDistance) {
                 minDistance = distance
-                closestSection = section
+                closestSection = sectionId
               }
             }
           })
           
-          foundSection = closestSection.id
+          foundSection = closestSection
           
           // Calculate progress for closest section
           const closestElement = document.getElementById(foundSection)
@@ -304,29 +327,23 @@ function App() {
 
     const contentEl = contentRef.current
     if (contentEl) {
-      // Prevent scrolling past the top (ASCII star top / progress line start)
       const handleScrollWithConstraint = () => {
-        // Enforce minimum scroll position (can't scroll past ASCII star top)
         if (contentEl.scrollTop < 0) {
           contentEl.scrollTop = 0
-          return // Don't process scroll if we just corrected it
+          return
         }
         handleScroll()
       }
-      
-      // Set initial scroll position to show ASCII star at progress line start
-      // With padding-top: 76px, scrollTop = 0 aligns ASCII star with wrapper top
-      contentEl.scrollTop = 0
-      
+
       contentEl.addEventListener('scroll', handleScrollWithConstraint)
       window.addEventListener('resize', handleScroll)
-      handleScroll() // Initial check
+      handleScroll()
       return () => {
         contentEl.removeEventListener('scroll', handleScrollWithConstraint)
         window.removeEventListener('resize', handleScroll)
       }
     }
-  }, [lineStart, lineEnd])
+  }, [])
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id)
@@ -334,7 +351,7 @@ function App() {
     if (element && contentEl) {
       if (id === 'about') {
         // For "about" section, align ASCII star top with progress bar start
-        // Content wrapper has padding-top: 76px, so ASCII star aligns with wrapper top when scrollTop = 0
+        // Content wrapper has padding-top matching the star offset so scrollTop = 0 aligns the layout
         contentEl.scrollTo({
           top: 0,
           behavior: 'smooth'
@@ -351,7 +368,7 @@ function App() {
           const titleOffsetTop = titleRect.top - wrapperRect.top + currentScrollTop
           
           // Position title 50px below progress bar start
-          // Content wrapper top is at progress line start (73px from viewport)
+          // Content wrapper top is at progress line start (lineStart from viewport)
           // So title should be at 50px from top of visible area (wrapper top)
           const targetScroll = titleOffsetTop - 50
           
@@ -427,15 +444,28 @@ function App() {
     }
   }, [lineStart, lineEnd])
 
+  if (view === 'leave') {
+    return (
+      <div
+        className="dot-pattern relative w-full min-h-screen"
+        style={{ margin: 0, padding: 0 }}
+      >
+        <LeaveYourMark onBack={() => navigateView('home')} />
+      </div>
+    )
+  }
+
   return (
     <div 
       className={`dot-pattern relative w-full ${darkMode ? 'dark' : ''}`}
       style={{ 
-        minHeight: '100vh', 
-        paddingBottom: '100px',
+        minHeight: '100vh',
         backgroundColor: darkMode ? '#191717' : undefined,
         margin: 0,
-        padding: 0,
+        paddingTop: 0,
+        paddingBottom: '100px',
+        paddingLeft: 0,
+        paddingRight: 0,
         top: 0,
         left: 0
       }}
@@ -470,6 +500,18 @@ function App() {
                   {section.label}
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={() => {
+                  navigateView('leave')
+                  setShowMenu(false)
+                }}
+                className={`block w-full text-left py-2 text-sm font-bold underline decoration-solid underline-offset-2 ${
+                  darkMode ? 'text-[#E7E7E7] opacity-70' : 'text-[#191717] opacity-70'
+                }`}
+              >
+                leave your mark
+              </button>
             </div>
           )}
         </div>
@@ -548,17 +590,31 @@ function App() {
                   </button>
                 )
               })}
+              <button
+                type="button"
+                onClick={() => {
+                  navigateView('leave')
+                  setShowMenu(true)
+                }}
+                className={`text-right text-[11px] font-extrabold underline decoration-solid underline-offset-2 transition-all duration-200 whitespace-nowrap w-[100px] outline-none focus:outline-none select-none ${
+                  darkMode
+                    ? 'text-[#E7E7E7] hover:text-[#ffffff] hover:opacity-100'
+                    : 'text-[#191717] hover:text-[#000000] hover:opacity-100'
+                } opacity-70`}
+              >
+                leave your mark
+              </button>
             </div>
           )}
         </div>
 
-         {/* Content wrapper */}
+         {/* Top of this box = top of the fixed vertical sidebar line (lineStart). No extra paddingTop — stars align to this edge. */}
          <div 
            ref={contentRef}
            className="content-wrapper relative pb-[100px] mx-auto max-w-[534px] px-4 md:px-0" 
            style={{ 
-             marginTop: `${lineStart}px`, // Position top of wrapper at progress line start (73px)
-             paddingTop: '76px', // Space for ASCII star (76px above about section)
+             marginTop: `${lineStart}px`,
+             paddingTop: 0,
              height: lineEnd > lineStart ? `${lineEnd - lineStart}px` : 'auto',
              overflowY: 'auto',
              overflowX: 'hidden',
@@ -566,9 +622,9 @@ function App() {
            }}
          >
           {/* About Section */}
-          <section id="about" className="relative mb-[30px] max-w-[534px]">
+          <section id="about" className="relative mb-[30px] max-w-[534px] pt-[min(92px,18vw)]">
             {/* Dark/Light mode toggle */}
-            <div className="absolute top-[-27px] left-0 z-10">
+            <div className="absolute top-0 left-0 z-10">
               <button
                 onClick={() => setDarkMode(!darkMode)}
                 className="flex items-center justify-center h-[24px] w-[101px] cursor-pointer group outline-none focus:outline-none"
@@ -586,8 +642,8 @@ function App() {
               </button>
             </div>
 
-            {/* ASCII Art - positioned relative to about section */}
-            <div className={`absolute top-[-76px] right-[40px] font-['Manrope'] font-extrabold text-[8px] md:text-[11px] leading-tight whitespace-pre z-10 hidden sm:block ${darkMode ? 'text-[#E7E7E7]' : 'text-black'}`}>
+            {/* ASCII — top of block lines up with top of sidebar / content box (section top). Horizontal: right-[40px]. */}
+            <div className={`absolute top-0 right-[40px] font-['Manrope'] font-extrabold text-[8px] md:text-[11px] leading-tight whitespace-pre z-[5] hidden sm:block ${darkMode ? 'text-[#E7E7E7]' : 'text-black'}`}>
               <p className="mb-0">{`⠀⠀⢸⡿⢦⣄⠀⢀⣠⣴⣶⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ `}</p>
               <p className="mb-0">{`⠀⠀⠘⣷⠀⠉⠛⠛⠉⢰⡇⠀⠀⠘⣷⣦⣾⡇⠀⠀⠀⠀⠀⠀⠀ `}</p>
               <p className="mb-0">{`⠀⢀⣰⠿⠀⠀⠀⠀⠀⢿⡁⠀⢀⣴⣿⣿⣿⣶⡄⠀⠀⠀⠀⠀⠀ `}</p>
@@ -631,8 +687,9 @@ function App() {
               <p className="mb-[-5px]">Currently: reworking my GitHub, brainstorming projects, and recovering from exams :)</p>
             </div>
 
-            {/* Social Links */}
-            <div className="flex gap-[20px] items-center mb-[20px]">
+            {/* Social links + leave your mark — space below pushes work & rest of page down */}
+            <div className="flex flex-col gap-[10px] mb-[32px]">
+              <div className="flex gap-[20px] items-center">
               <a 
                 href="https://www.linkedin.com/in/freda-z-984442210/" 
                 target="_blank" 
@@ -657,6 +714,15 @@ function App() {
                   src={imgGithub} 
                 />
               </a>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => navigateView('leave')}
+              className="mt-[8px] text-[11px] font-['Manrope'] underline decoration-solid underline-offset-2 opacity-70 hover:opacity-100"
+            >
+              leave your mark ↗
+            </button>
             </div>
           </section>
 
@@ -742,7 +808,7 @@ function App() {
                       SheHacks+ 10 Co-Chair
                     </a>
                   </h3>
-                  <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Jan 2025 - Mar 2026</p>
+                  <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Jan 2025 - Apr 2026</p>
                 </div>
                 <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
                   Organizing Canada's largest all-women, non-binary hackathon under the Women+ In Technology Society (WITS+) bubble at Western 🚀
@@ -764,7 +830,7 @@ function App() {
                       Hack Western 12 Sponsorship Lead
                     </a>
                   </h3>
-                  <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Mar 2025 - Jan 2026</p>
+                  <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Mar 2025 - Apr 2026</p>
                 </div>
                 <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
                   Organizing corporate relations for one of Canada's largest student-run hackathons at Western 🐴
@@ -795,7 +861,7 @@ function App() {
           <span>designed & coded with </span>
           <span className="font-extrabold">♡</span>
           <span> |  last updated: </span>
-          <span className="font italic">01/22/26</span>
+          <span className="font italic">04/18/26</span>
         </p>
       </footer>
     </div>
