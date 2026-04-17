@@ -1,13 +1,38 @@
 import { useState, useEffect, useRef } from 'react'
 
-const imgLinkedin = "/assets/linkedin.png"
-const imgGithub = "/assets/github.png"
-const imgLine11 = "/assets/line11.png"
-const imgLine12 = "/assets/line12.png"
-const imgLine13 = "/assets/line13.png"
-const imgLine14 = "/assets/line14.png"
-
 const NAME_VARIANTS = ['freda!', '赵嘉奕!']
+
+function LinkedinIcon({ className = '' }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      viewBox="0 0 16 16"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill="currentColor"
+        d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zM3.743 5.18c.837 0 1.358-.554 1.358-1.248-.015-.709-.521-1.248-1.342-1.248-.821 0-1.358.54-1.358 1.248 0 .694.521 1.248 1.327 1.248h.015zm4.1 8.214V9.359c0-.216.016-.432.08-.586.176-.431.577-.878 1.25-.878.882 0 1.234.663 1.234 1.634v3.865h2.401V9.25c0-2.22-1.184-3.254-2.764-3.254-1.274 0-1.845.7-2.165 1.193h.016v-1.02H5.494c.03.678 0 7.225 0 7.225h2.35z"
+      />
+    </svg>
+  )
+}
+
+function GithubIcon({ className = '' }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      viewBox="0 0 16 16"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill="currentColor"
+        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.68 7.68 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+      />
+    </svg>
+  )
+}
 
 function App() {
   const [darkMode, setDarkMode] = useState(false)
@@ -637,25 +662,19 @@ function App() {
                 href="https://www.linkedin.com/in/freda-z-984442210/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="w-[30px] h-[30px] hover:opacity-70 transition-opacity cursor-pointer relative z-10 block outline-none focus:outline-none"
+                aria-label="LinkedIn"
+                className={`w-[30px] h-[30px] hover:opacity-70 transition-opacity cursor-pointer relative z-10 block outline-none focus:outline-none ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}
               >
-                <img 
-                  alt="LinkedIn" 
-                  className={`w-full h-full pointer-events-none object-contain ${darkMode ? 'brightness-0 invert' : ''}`} 
-                  src={imgLinkedin} 
-                />
+                <LinkedinIcon className="w-full h-full pointer-events-none" />
               </a>
               <a 
                 href="https://github.com/fredisproductive" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="w-[31px] h-[30px] hover:opacity-70 transition-opacity cursor-pointer relative z-10 block outline-none focus:outline-none"
+                aria-label="GitHub"
+                className={`w-[31px] h-[30px] hover:opacity-70 transition-opacity cursor-pointer relative z-10 block outline-none focus:outline-none ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}
               >
-                <img 
-                  alt="GitHub" 
-                  className={`w-full h-full pointer-events-none object-contain ${darkMode ? 'brightness-0 invert' : ''}`} 
-                  src={imgGithub} 
-                />
+                <GithubIcon className="w-full h-full pointer-events-none" />
               </a>
             </div>
           </section>
@@ -669,16 +688,42 @@ function App() {
             <div className="space-y-[10px]">
               <div className="flex flex-col gap-[5px]">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
-                    <a 
-                      href="https://globalwealth.scotiabank.com/en/home.html" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="hover:opacity-70 transition-opacity underline decoration-solid underline-offset-2"
-                    >
-                      Scotiabank, GWE
-                    </a>
-                  </h3>
+                  <div>
+                    <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                      <a
+                        href="https://www.td.com/ca/en/asset-management/funds/solutions/mutual-funds"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:opacity-70 transition-opacity underline decoration-solid underline-offset-2"
+                      >
+                        TD Bank, Asset Management & Mutual Funds
+                      </a>
+                    </h3>
+                    <p className={`font-['Manrope'] font-normal italic text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                      Software Engineering Intern
+                    </p>
+                  </div>
+                  <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Incoming May 2026</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-[5px]">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                      <a 
+                        href="https://globalwealth.scotiabank.com/en/home.html" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="hover:opacity-70 transition-opacity underline decoration-solid underline-offset-2"
+                      >
+                        Scotiabank, GWE
+                      </a>
+                    </h3>
+                    <p className={`font-['Manrope'] font-normal italic text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                      Software and Product Engineer Intern
+                    </p>
+                  </div>
                   <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>May 2025 - Aug 2025</p>
                 </div>
                 <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Developed full-stack financial monitoring systems and data pipelines to enhance operational integrity and accelerate issue resolution.</p>
@@ -686,16 +731,21 @@ function App() {
               
               <div className="flex flex-col gap-[5px]">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
-                    <a 
-                      href="https://mantech-inc.com/" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="hover:opacity-70 transition-opacity underline decoration-solid underline-offset-2"
-                    >
-                      MANTECH Inc.
-                    </a>
-                  </h3>
+                  <div>
+                    <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                      <a 
+                        href="https://mantech-inc.com/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="hover:opacity-70 transition-opacity underline decoration-solid underline-offset-2"
+                      >
+                        MANTECH Inc.
+                      </a>
+                    </h3>
+                    <p className={`font-['Manrope'] font-normal italic text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                      Software Development Intern
+                    </p>
+                  </div>
                   <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>May 2024 - Aug 2024</p>
                 </div>
                 <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Engineered scalable automation software and secure, internationalized platforms to drive product expansion and system reliability.</p>
@@ -703,16 +753,21 @@ function App() {
               
               <div className="flex flex-col gap-[5px]">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
-                    <a 
-                      href="https://uwaterloo.ca/social-intelligent-robotics-research-lab/" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="hover:opacity-70 transition-opacity underline decoration-solid underline-offset-2"
-                    >
-                      UW Social and Intelligent Robotics Research Lab (SIRRL)
-                    </a>
-                  </h3>
+                  <div>
+                    <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                      <a 
+                        href="https://uwaterloo.ca/social-intelligent-robotics-research-lab/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="hover:opacity-70 transition-opacity underline decoration-solid underline-offset-2"
+                      >
+                        UW Social and Intelligent Robotics Research Lab (SIRRL)
+                      </a>
+                    </h3>
+                    <p className={`font-['Manrope'] font-normal italic text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                      Research Lab Assistant
+                    </p>
+                  </div>
                   <p className={`font-['Manrope'] font-extralight text-[11px] md:text-[12px] text-right ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>June 2022 - Aug 2022</p>
                 </div>
                 <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>Built human-robot interaction software for social robotics platforms, focusing on algorithmic optimization and intelligent systems research.</p>
@@ -778,9 +833,23 @@ function App() {
             <h2 className={`font-['Source_Serif_4'] font-bold italic text-[28px] md:text-[32px] mb-[8px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
               projects
             </h2>
-            <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
-              coming soon...
-            </p>
+            <div className="space-y-[10px]">
+              <div className="flex flex-col gap-[5px]">
+                <h3 className={`font-['Manrope'] font-bold text-[13px] md:text-[14px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                  <a
+                    href="https://github.com/fredisproductive/roam"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:opacity-70 transition-opacity underline decoration-solid underline-offset-2"
+                  >
+                    roam
+                  </a>
+                </h3>
+                <p className={`font-['Manrope'] font-normal text-[12px] md:text-[13px] ${darkMode ? 'text-[#E7E7E7]' : 'text-[#191717]'}`}>
+                  A centralized travel planning tool where users search destinations, reorder stops via drag-and-drop, and receive LLM-powered recommendations.
+                </p>
+              </div>
+            </div>
           </section>
 
         </div>
@@ -795,7 +864,7 @@ function App() {
           <span>designed & coded with </span>
           <span className="font-extrabold">♡</span>
           <span> |  last updated: </span>
-          <span className="font italic">01/22/26</span>
+          <span className="font italic">04/17/26</span>
         </p>
       </footer>
     </div>
